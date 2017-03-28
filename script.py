@@ -6,11 +6,15 @@ import visualize as v
 # capacity testing
 
 max_iter = 5
-neuro_root = 10
-seq_length = 0.1*(neuro_root*neuro_root)
-corr = 0
+num_neurons_rt= 150
+seq_length = 0
+int(0.01*(num_neurons_rt*num_neurons_rt))
+corr = 0.8
 
-while (exp.avg_generated_sequence(max_iter, seq_length,neuro_root, corr) > 0.9 ):
+
+while (exp.avg_generated_sequence(max_iter, seq_length,num_neurons_rt, corr) > 0.5 ):
 	print('{} within capacity'.format(seq_length))
 	seq_length+=1
+
+print('Capacity of {} neurons in a hopfieldnet is {}'.format(num_neurons_rt,seq_length))
 

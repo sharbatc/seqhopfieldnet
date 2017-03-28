@@ -9,8 +9,9 @@ import matplotlib.pyplot as plt
 import hopfield_network_seq as network
 import pattern_tools_seq as pattern_tools
 import plot_tools_seq as plot_tools
+import visualize as vis
 
-def generate_sequence(seq_length,num_neurons_rt,max_corr,corr_tolerance = 0.005):
+def generate_sequence(seq_length,num_neurons_rt,corr,corr_tolerance = 0.005):
 	'''
 	Generates sequences to be fed to the Hopfield net
 	'''
@@ -21,26 +22,26 @@ def generate_sequence(seq_length,num_neurons_rt,max_corr,corr_tolerance = 0.005)
 
 	## create the sequences ##
 	for num in np.arange(1, seq_length,1):
-		pattern_nplus1 = pattern_tools.get_noisy_copy(pattern_n, 1-max_corr)
-		corr_diff = np.abs(np.corrcoef(pattern_n.flatten(),pattern_nplus1.flatten())[0,1]) - max_corr # how far are we from desired corr?
+		pattern_nplus1 = pattern_tools.get_noisy_copy(pattern_n, 1-corr)
+		corr_diff = np.abs(np.corrcoef(pattern_n.flatten(),pattern_nplus1.flatten())[0,1]) - corr # how far are we from desired corr?
 		
 		while corr_diff > corr_tolerance: #keep generating noisy ones ad okay-um
-		        pattern_nplus1 = pattern_tools.get_noisy_copy(pattern_n, 1-max_corr)
-		        corr_diff = np.abs(np.abs((np.corrcoef(pattern_n.flatten(),pattern_nplus1.flatten())[0,1])) - max_corr)
+		        pattern_nplus1 = pattern_tools.get_noisy_copy(pattern_n, 1-corr)
+		        corr_diff = np.abs(np.abs((np.corrcoef(pattern_n.flatten(),pattern_nplus1.flatten())[0,1])) - corr)
 
 		pattern_list.append(pattern_nplus1);
 		pattern_n = pattern_nplus1;
 
 	return pattern_list
 
-def run_seq_hopfield_net(seq_length,num_neurons_rt,max_corr,save_flag=1):
+def run_seq_hopfield_net(seq_length,num_neurons_rt,corr,save_flag=1):
 	'''
 	Function to be called each time for the experiment to run the hopfield network. Stores the states as a pattern returned by the hopfield network as well the pattern stored in a dictionary and dumps it into .pkl file to be used later for further analysis.
 
 	num_neurons_rt squared is the number of neurons
 
 	'''
-	pattern_list = generate_sequence(seq_length,num_neurons_rt,max_corr)
+	pattern_list = generate_sequence(seq_length,num_neurons_rt,corr)
 	hopfield_net = network.HopfieldNetwork(nr_neurons= num_neurons_rt**2);
 	hopfield_net.store_patterns(pattern_list);
 
@@ -53,7 +54,7 @@ def run_seq_hopfield_net(seq_length,num_neurons_rt,max_corr,save_flag=1):
 	dictionary = {'pattern_list':pattern_list,'states_as_patterns':states_as_patterns}
 	## save data ##
 	if save_flag:
-		file_name = 'data/seqlen{}_neunum{}_corr{}.pkl'.format(seq_length,num_neurons_rt,max_corr)
+		file_name = 'data/seqlen{}_neunum{}_corr{}.pkl'.format(seq_length,num_neurons_rt,corr)
 		# print(file_name)
 		afile = open(file_name,'wb')
 		pickle.dump(dictionary,afile)
@@ -61,6 +62,12 @@ def run_seq_hopfield_net(seq_length,num_neurons_rt,max_corr,save_flag=1):
 	# else : 
 	# 	return dictionary
 
+def read_data(seq_length,num_neurons_rt,corr):
+	file_name = 'data/seqlen{}_neunum{}_corr{}.pkl'.format(seq_length,num_neurons_rt,corr)
+	file = open(file_name,'rb')
+	new_d = pickle.load(file)
+	file.close()
+	return new_d
 
 def is_seq_generated(pattern_list,states_as_patterns):
 	'''
@@ -85,36 +92,35 @@ def is_seq_generated(pattern_list,states_as_patterns):
 		return 1 #generated
 
 
-def avg_generated_sequence(max_iter, seq_length,neuro_root, corr,save_flag=1):
+def avg_generated_sequence(max_iter, seq_length,num_neurons_rt, corr,save_flag=1):
 	output = np.zeros(max_iter)
 	for i in np.arange(max_iter):
-		run_seq_hopfield_net(seq_length,neuro_root,corr,save_flag)
-		file_name = 'data/seqlen{}_neunum{}_corr{}.pkl'.format(seq_length,num_neurons_rt,max_corr)
-	    file = open(file_name,'rb')
-		hopfield_dict = pickle.load(file)
-		file.close()
+		run_seq_hopfield_net(seq_length,num_neurons_rt,corr)
+		hopfield_dict = read_data(seq_length,num_neurons_rt,corr)
+		pattern_list = hopfield_dict['pattern_list']
+		states_as_patterns = hopfield_dict['states_as_patterns']
+		output[i] = is_seq_generated(pattern_list,states_as_patterns)
 	return np.mean(output)
 
 if __name__ == "__main__":
-    import sys
-    import time
-    start_time = time.time()
-    seq_length = int(sys.argv[1])
-    num_neurons_rt = int(sys.argv[2])
-    max_corr = float(sys.argv[3])
+	import sys
+	import time
+	start_time = time.time()
+	seq_length = int(sys.argv[1])
+	num_neurons_rt = int(sys.argv[2])
+	corr = float(sys.argv[3])
 
-    run_seq_hopfield_net(seq_length,num_neurons_rt,max_corr)
+	run_seq_hopfield_net(seq_length,num_neurons_rt,corr)
 
-    file_name = 'data/seqlen{}_neunum{}_corr{}.pkl'.format(seq_length,num_neurons_rt,max_corr)
-    file = open(file_name,'rb')
-	hopfield_dict = pickle.load(file)
-	file.close()
+	hopfield_dict = read_data(seq_length,num_neurons_rt,corr)
 
 	pattern_list = hopfield_dict['pattern_list']
-    states_as_patterns = hopfield_dict['states_as_patterns']
-    if (is_seq_generated(pattern_list,states_as_patterns)):
-    	print('sequence generated')
-    else:
-    	print('not generated, beyond capacity')
+	states_as_patterns = hopfield_dict['states_as_patterns']
+	if (is_seq_generated(pattern_list,states_as_patterns)):
+		print('sequence generated')
+	else:
+		print('not generated, beyond capacity')
+	vis.plot_seq_recall(pattern_list,states_as_patterns)
+	vis.plot_max_overlap_amount(pattern_list,states_as_patterns)
 
 
