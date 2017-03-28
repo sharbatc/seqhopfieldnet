@@ -1,6 +1,6 @@
 '''
 Experiment iterating over the parameters.
-This one creates data files to be stored later for visualization.
+Defines functions where one creates data files to be stored later for visualization.
 '''
 import sys
 import pickle
@@ -33,11 +33,11 @@ def generate_sequence(seq_length,num_neurons_rt,max_corr,corr_tolerance = 0.005)
 
 	return pattern_list
 
-def run_seq_hopfield_net(seq_length,num_neurons_rt,max_corr):
+def run_seq_hopfield_net(seq_length,num_neurons_rt,max_corr,save_flag=1):
 	'''
-	Function to be called each time for the experiment to run the hopfield network. Dumps data in a separate folder with file name according to the params of the experiment.
+	Function to be called each time for the experiment to run the hopfield network. Stores the states as a pattern returned by the hopfield network as well the pattern stored in a dictionary and dumps it into .pkl file to be used later for further analysis.
 
-		num_neurons_rt squared is the number of neurons
+	num_neurons_rt squared is the number of neurons
 
 	'''
 	pattern_list = generate_sequence(seq_length,num_neurons_rt,max_corr)
@@ -50,17 +50,19 @@ def run_seq_hopfield_net(seq_length,num_neurons_rt,max_corr):
 	states = hopfield_net.run_with_monitoring(nr_steps=seq_length+1);
 	states_as_patterns = pattern_tools.reshape_patterns(states, pattern_list[0].shape);
 
-	## save data ##
-	file_name = 'data/seqlen{}_neunum{}_corr{}.pkl'.format(seq_length,num_neurons_rt,max_corr)
 	dictionary = {'pattern_list':pattern_list,'states_as_patterns':states_as_patterns}
-	print(file_name)
-	afile = open(file_name,'wb')
-	pickle.dump(dictionary,afile)
-	afile.close()
+	## save data ##
+	if save_flag:
+		file_name = 'data/seqlen{}_neunum{}_corr{}.pkl'.format(seq_length,num_neurons_rt,max_corr)
+		# print(file_name)
+		afile = open(file_name,'wb')
+		pickle.dump(dictionary,afile)
+		afile.close()
+	# else : 
+	# 	return dictionary
 
-	return dictionary
 
-def if_seq_generated(pattern_list,states_as_patterns):
+def is_seq_generated(pattern_list,states_as_patterns):
 	'''
 	Computes if sequence is generated or not
 
@@ -83,21 +85,32 @@ def if_seq_generated(pattern_list,states_as_patterns):
 		return 1 #generated
 
 
-def avg_generation(max_iter, max_seq_length,neuro_root, corr):
+def avg_generated_sequence(max_iter, seq_length,neuro_root, corr,save_flag=1):
 	output = np.zeros(max_iter)
 	for i in np.arange(max_iter):
-		output[i] = run_seq_experiment(max_seq_length,neuro_root,corr)
+		run_seq_hopfield_net(seq_length,neuro_root,corr,save_flag)
+		file_name = 'data/seqlen{}_neunum{}_corr{}.pkl'.format(seq_length,num_neurons_rt,max_corr)
+	    file = open(file_name,'rb')
+		hopfield_dict = pickle.load(file)
+		file.close()
 	return np.mean(output)
 
 if __name__ == "__main__":
     import sys
     import time
     start_time = time.time()
-    max_seq_length = int(sys.argv[1])
+    seq_length = int(sys.argv[1])
     num_neurons_rt = int(sys.argv[2])
     max_corr = float(sys.argv[3])
-    hopfield_dict = run_seq_hopfield_net(max_seq_length,num_neurons_rt,max_corr)
-    pattern_list = hopfield_dict['pattern_list']
+
+    run_seq_hopfield_net(seq_length,num_neurons_rt,max_corr)
+
+    file_name = 'data/seqlen{}_neunum{}_corr{}.pkl'.format(seq_length,num_neurons_rt,max_corr)
+    file = open(file_name,'rb')
+	hopfield_dict = pickle.load(file)
+	file.close()
+
+	pattern_list = hopfield_dict['pattern_list']
     states_as_patterns = hopfield_dict['states_as_patterns']
     if (is_seq_generated(pattern_list,states_as_patterns)):
     	print('sequence generated')

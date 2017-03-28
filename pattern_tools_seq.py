@@ -1,5 +1,5 @@
 """
-Sharbatc changes the following for his semester project
+Sharbatc changed the following for his semester project
 EPFL, Lausanne, March 2017.
 """
 # The original documentation is given below

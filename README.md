@@ -1,1 +1,1 @@
-# seqhopfieldnet
+# Sequential Hopfield Net

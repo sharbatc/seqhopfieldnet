@@ -6,11 +6,11 @@ import visualize as v
 # capacity testing
 
 max_iter = 5
-max_seq_length = 30
 neuro_root = 10
+seq_length = 0.1*(neuro_root*neuro_root)
 corr = 0
 
-while (exp.avg_generation(max_iter, max_seq_length,neuro_root, corr) > 0.9 ):
-	print('{} within capacity'.format(max_seq_length))
-	max_seq_length+=1
+while (exp.avg_generated_sequence(max_iter, seq_length,neuro_root, corr) > 0.9 ):
+	print('{} within capacity'.format(seq_length))
+	seq_length+=1
 
