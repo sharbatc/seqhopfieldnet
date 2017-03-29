@@ -9,7 +9,6 @@ import matplotlib.pyplot as plt
 import hopfield_network_seq as network
 import pattern_tools_seq as pattern_tools
 import plot_tools_seq as plot_tools
-import visualize as vis
 
 def generate_sequence(seq_length,num_neurons_rt,corr,corr_tolerance = 0.005):
 	'''
@@ -120,7 +119,5 @@ if __name__ == "__main__":
 		print('sequence generated')
 	else:
 		print('not generated, beyond capacity')
-	vis.plot_seq_recall(pattern_list,states_as_patterns)
-	vis.plot_max_overlap_amount(pattern_list,states_as_patterns)
 
 

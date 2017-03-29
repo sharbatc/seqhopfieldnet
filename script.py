@@ -20,14 +20,14 @@ import visualize as vis
 
 # plotting
 
-seq_length = 4
-num_neurons_rt = 70
-corr = 0.5
+seq_length = 29
+num_neurons_rt = 10
+corr = 0.1
 hopfield_dict = exp.read_data(seq_length,num_neurons_rt,corr)
 pattern_list = hopfield_dict['pattern_list']
 states_as_patterns = hopfield_dict['states_as_patterns']
 # weight_matrix = hopfield_dict['weight_matrix']
+# vis.plot_seq_recall(pattern_list,states_as_patterns)
+# vis.plot_max_overlap_amount(pattern_list,states_as_patterns)
 
-vis.plot_seq_recall(pattern_list,states_as_patterns)
-vis.plot_max_overlap_amount(pattern_list,states_as_patterns)
-
+vis.plot_all_overlaps(pattern_list,states_as_patterns,[20,29])

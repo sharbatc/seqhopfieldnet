@@ -46,9 +46,20 @@ def plot_max_overlap_amount(pattern_list, states_as_patterns):
 	plt.tight_layout
 	plt.show()
 
-def plot_all_overlaps(pattern_list, states_as_patterns):
-	seq_length=len(pattern_list)
-	seq_gen = np.array([])
-	overlap_gen = np.array([])
-	for i in range(len(states_as_patterns)):
-		overlap_list = pattern_tools.compute_overlap_list(states_as_patterns[i], pattern_list)
+def plot_all_overlaps(pattern_list, states_as_patterns,interval):
+	f, ax = plt.subplots(len(np.arange(interval[0],interval[1],1)),1, sharex=True)
+	for i in np.arange(interval[0],interval[1],1):
+		overlap_list = pattern_tools.compute_overlap_list(states_as_patterns[i], pattern_list);
+		ax[i-interval[0]].bar(range(len(overlap_list)),overlap_list)
+		ax[i-interval[0]].grid(True)
+		ax[i-interval[0]].set_xlabel('Pattern Name')
+		ax[i-interval[0]].set_ylim(-1,1)
+
+	f.subplots_adjust(hspace=0)
+	plt.setp([a.get_xticklabels() for a in f.axes[:-1]], visible=False)
+	plt.setp([a.get_yticklabels() for a in f.axes[:]], visible=False)
+
+	plt.tight_layout
+	plt.show()
+
+
