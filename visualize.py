@@ -45,3 +45,10 @@ def plot_max_overlap_amount(pattern_list, states_as_patterns):
 
 	plt.tight_layout
 	plt.show()
+
+def plot_all_overlaps(pattern_list, states_as_patterns):
+	seq_length=len(pattern_list)
+	seq_gen = np.array([])
+	overlap_gen = np.array([])
+	for i in range(len(states_as_patterns)):
+		overlap_list = pattern_tools.compute_overlap_list(states_as_patterns[i], pattern_list)

@@ -51,7 +51,7 @@ def run_seq_hopfield_net(seq_length,num_neurons_rt,corr,save_flag=1):
 	states = hopfield_net.run_with_monitoring(nr_steps=seq_length+1);
 	states_as_patterns = pattern_tools.reshape_patterns(states, pattern_list[0].shape);
 
-	dictionary = {'pattern_list':pattern_list,'states_as_patterns':states_as_patterns}
+	dictionary = {'pattern_list':pattern_list,'states_as_patterns':states_as_patterns,'weight_matrix':hopfield_net.weights}
 	## save data ##
 	if save_flag:
 		file_name = 'data/seqlen{}_neunum{}_corr{}.pkl'.format(seq_length,num_neurons_rt,corr)
