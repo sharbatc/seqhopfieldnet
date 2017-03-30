@@ -60,7 +60,7 @@ def run_seq_hopfield_net(seq_length,num_neurons,corr,save_flag=1):
 	# 	return dictionary
 
 def read_data(seq_length,num_neurons,corr):
-	file_name = 'data/seqlen{}_neunum{}_corr{}.pkl'.format(seq_length,num_neurons,corr)
+	file_name = 'data/older_data/seqlen{}_neunum{}_corr{}.pkl'.format(seq_length,num_neurons,corr)
 	file = open(file_name,'rb')
 	new_d = pickle.load(file)
 	file.close()
