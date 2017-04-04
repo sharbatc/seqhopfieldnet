@@ -1,4 +1,6 @@
 '''
+Sharbatc
+EPFL, Lausanne, March 2017.
 Experiment iterating over the parameters.
 Defines functions where one creates data files to be stored later for visualization.
 '''
@@ -33,7 +35,7 @@ def generate_sequence(seq_length,num_neurons,corr,corr_tolerance = 0.005):
 
 	return pattern_list
 
-def run_seq_hopfield_net(seq_length,num_neurons,corr,save_flag=1):
+def run_seq_hopfield_net(seq_length,num_neurons,corr,iter_no,save_flag=1):
 	'''
 	Function to be called each time for the experiment to run the hopfield network. Stores the states as a pattern returned by the hopfield network as well the pattern stored in a dictionary and dumps it into .pkl file to be used later for further analysis.
 
@@ -51,7 +53,7 @@ def run_seq_hopfield_net(seq_length,num_neurons,corr,save_flag=1):
 	dictionary = {'pattern_list':pattern_list,'states_as_patterns':states_as_patterns,'weight_matrix':hopfield_net.weights}
 	## save data ##
 	if save_flag:
-		file_name = 'data/seqlen{}_neunum{}_corr{}.pkl'.format(seq_length,num_neurons,corr)
+		file_name = 'data/seqlen{}_neunum{}_corr{}_iter_no{}.pkl'.format(seq_length,num_neurons,corr,iter_no)
 		# print(file_name)
 		afile = open(file_name,'wb')
 		pickle.dump(dictionary,afile)
@@ -59,8 +61,8 @@ def run_seq_hopfield_net(seq_length,num_neurons,corr,save_flag=1):
 	# else : 
 	# 	return dictionary
 
-def read_data(seq_length,num_neurons,corr):
-	file_name = 'data/older_data/seqlen{}_neunum{}_corr{}.pkl'.format(seq_length,num_neurons,corr)
+def read_data(seq_length,num_neurons,corr,iter_no):
+	file_name = 'data/seqlen{}_neunum{}_corr{}_iter_no{}.pkl'.format(seq_length,num_neurons,corr,iter_no)
 	file = open(file_name,'rb')
 	new_d = pickle.load(file)
 	file.close()
@@ -92,8 +94,8 @@ def is_seq_generated(pattern_list,states_as_patterns):
 def avg_generated_sequence(max_iter, seq_length,num_neurons, corr,save_flag=1):
 	output = np.zeros(max_iter)
 	for i in np.arange(max_iter):
-		run_seq_hopfield_net(seq_length,num_neurons,corr)
-		hopfield_dict = read_data(seq_length,num_neurons,corr)
+		run_seq_hopfield_net(seq_length,num_neurons,corr,i)
+		hopfield_dict = read_data(seq_length,num_neurons,corr,i)
 		pattern_list = hopfield_dict['pattern_list']
 		states_as_patterns = hopfield_dict['states_as_patterns']
 		output[i] = is_seq_generated(pattern_list,states_as_patterns)
@@ -107,9 +109,9 @@ if __name__ == "__main__":
 	num_neurons_rt = int(sys.argv[2])
 	corr = float(sys.argv[3])
 
-	run_seq_hopfield_net(seq_length,num_neurons_rt,corr)
+	run_seq_hopfield_net(seq_length,num_neurons_rt,corr,1)
 
-	hopfield_dict = read_data(seq_length,num_neurons_rt,corr)
+	hopfield_dict = read_data(seq_length,num_neurons_rt,corr,1)
 
 	pattern_list = hopfield_dict['pattern_list']
 	states_as_patterns = hopfield_dict['states_as_patterns']

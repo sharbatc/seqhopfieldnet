@@ -119,11 +119,9 @@ class HopfieldNetwork:
         l = len(pattern_list)
         next_p = None
 
-        for index, p in enumerate(pattern_list):
-            if index < (l-1):
-                next_p = pattern_list[index + 1]
-            else :
-                next_p = pattern_list[0]
+        for index in np.arange(0,l-1,1):
+            p = pattern_list[index]
+            next_p = pattern_list[index + 1]
 
             p_flat = p.flatten()
             next_p_flat = next_p.flatten()

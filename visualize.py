@@ -5,6 +5,11 @@ import matplotlib.pyplot as plt
 import numpy as np
 
 def plot_seq_recall(pattern_list, states_as_patterns):
+	'''
+	I have set a stopping criterion which will consider one recall instance to be successful iff we recall the entire sequence.
+	
+	'''
+
 	seq_length=len(pattern_list)
 	seq_gen = np.array([])
 	overlap_gen = np.array([])
